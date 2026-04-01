@@ -18,7 +18,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -29,11 +28,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var tokenJwt = recoverToken(request);
         if(tokenJwt != null){
-            var subject = tokenService.getSubject(tokenJwt);
-            var user = userRepository.findByEmail(subject);
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            setRouteAuthentication(tokenJwt);
+            setRouteAttributes(tokenJwt, request);
         }
         filterChain.doFilter(request, response);
     }
@@ -44,5 +40,18 @@ public class SecurityFilter extends OncePerRequestFilter {
             return authorizationHeader.replace("Bearer ", "");
         }
         return null;
+    }
+
+    private void setRouteAuthentication(String tokenJwt){
+        var subject = tokenService.getSubject(tokenJwt);
+        var user = userRepository.findByEmail(subject);
+
+        var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void setRouteAttributes(String tokenJwt, HttpServletRequest request){
+        var userId = tokenService.getUserId(tokenJwt);
+        request.setAttribute(RequestAttributeKey.USER_ID, userId);
     }
 }
