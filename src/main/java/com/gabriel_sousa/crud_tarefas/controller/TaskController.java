@@ -2,6 +2,7 @@ package com.gabriel_sousa.crud_tarefas.controller;
 
 import com.gabriel_sousa.crud_tarefas.dto.CreateTaskRequestDTO;
 import com.gabriel_sousa.crud_tarefas.dto.GetTaskResponseDTO;
+import com.gabriel_sousa.crud_tarefas.dto.UpdateTaskRequestDTO;
 import com.gabriel_sousa.crud_tarefas.security.RequestAttributeKey;
 import com.gabriel_sousa.crud_tarefas.service.TaskService;
 import jakarta.validation.Valid;
@@ -31,5 +32,25 @@ public class TaskController {
         return ResponseEntity.ok().body(
                 taskService.getAllByUser(userId)
         );
+    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity deleteById(@PathVariable Long taskId,
+                                     @RequestAttribute(RequestAttributeKey.USER_ID) Long userId){
+        taskService.deleteTaskById(taskId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{taskId}")
+    public ResponseEntity<GetTaskResponseDTO> updateById(@RequestBody @Valid UpdateTaskRequestDTO dto,
+                                                         @PathVariable Long taskId,
+                                                         @RequestAttribute(RequestAttributeKey.USER_ID) Long userId){
+        return ResponseEntity.ok(taskService.updateTask(dto,taskId, userId));
+    }
+
+    @PatchMapping("/conclude-task/{taskId}")
+    public ResponseEntity<GetTaskResponseDTO> concludeTask(@PathVariable Long taskId,
+                                                           @RequestAttribute(RequestAttributeKey.USER_ID) Long userId){
+        return ResponseEntity.ok(taskService.concludeTask(taskId, userId));
     }
 }

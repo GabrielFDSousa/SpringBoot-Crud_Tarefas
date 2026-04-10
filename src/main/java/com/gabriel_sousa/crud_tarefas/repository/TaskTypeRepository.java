@@ -8,4 +8,6 @@ import java.util.List;
 public interface TaskTypeRepository extends JpaRepository<TaskTypeEntity, Long> {
 
     List<TaskTypeEntity> findAllByUserId(Long userId);
+
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
