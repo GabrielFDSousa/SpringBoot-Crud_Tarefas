@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,5 +27,12 @@ public class GlobalExceptionHandler {
         GlobalExceptionResponseDTO responseDTO =
                 new GlobalExceptionResponseDTO(HttpStatus.BAD_REQUEST, ex.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<GlobalExceptionResponseDTO> handleAccessDeniedException(AccessDeniedException ex){
+        GlobalExceptionResponseDTO responseDTO =
+                new GlobalExceptionResponseDTO(HttpStatus.BAD_REQUEST, ex.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseDTO);
     }
 }
