@@ -2,9 +2,9 @@ package com.gabriel_sousa.crud_tarefas.mapper;
 
 import com.gabriel_sousa.crud_tarefas.dto.CreateTaskTypeRequestDTO;
 import com.gabriel_sousa.crud_tarefas.dto.GetTaskTypeResponseDTO;
+import com.gabriel_sousa.crud_tarefas.dto.UpdateTaskTypeRequestDTO;
 import com.gabriel_sousa.crud_tarefas.entity.TaskTypeEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -21,4 +21,7 @@ public interface TaskTypeMapper {
     GetTaskTypeResponseDTO entityToGetResponseDTO(TaskTypeEntity entity);
 
     List<GetTaskTypeResponseDTO> entitiesToListGetResponseDTO(List<TaskTypeEntity> entities);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void updateTaskTypeFromUpdateTaskTypeRequestDTO(UpdateTaskTypeRequestDTO dto, @MappingTarget TaskTypeEntity entity);
 }

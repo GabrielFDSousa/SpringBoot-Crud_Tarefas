@@ -6,10 +6,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,7 +34,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<GlobalExceptionResponseDTO> handleAccessDeniedException(AccessDeniedException ex){
         GlobalExceptionResponseDTO responseDTO =
-                new GlobalExceptionResponseDTO(HttpStatus.BAD_REQUEST, ex.getMessage(), LocalDateTime.now());
+                new GlobalExceptionResponseDTO(HttpStatus.FORBIDDEN, ex.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseDTO);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<GlobalExceptionResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
+        String message = ex.getBindingResult().getFieldErrors()
+                .stream().map(e-> e.getField() + ": " + e.getDefaultMessage())
+                .collect(Collectors.joining(" | "));
+        GlobalExceptionResponseDTO responseDTO =
+                new GlobalExceptionResponseDTO(HttpStatus.BAD_REQUEST, message, LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
     }
 }

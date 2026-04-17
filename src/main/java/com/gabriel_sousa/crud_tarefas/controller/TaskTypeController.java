@@ -2,6 +2,7 @@ package com.gabriel_sousa.crud_tarefas.controller;
 
 import com.gabriel_sousa.crud_tarefas.dto.CreateTaskTypeRequestDTO;
 import com.gabriel_sousa.crud_tarefas.dto.GetTaskTypeResponseDTO;
+import com.gabriel_sousa.crud_tarefas.dto.UpdateTaskTypeRequestDTO;
 import com.gabriel_sousa.crud_tarefas.security.RequestAttributeKey;
 import com.gabriel_sousa.crud_tarefas.service.TaskTypeService;
 import jakarta.validation.Valid;
@@ -31,5 +32,23 @@ public class TaskTypeController {
         return ResponseEntity.ok().body(
                 taskTypeService.getAllByUser(userId)
         );
+    }
+
+    @PutMapping("/{taskTypeId}")
+    public ResponseEntity<GetTaskTypeResponseDTO> updateTaskTypeById(
+            @RequestBody @Valid UpdateTaskTypeRequestDTO dto,
+            @PathVariable Long taskTypeId,
+            @RequestAttribute(RequestAttributeKey.USER_ID) Long userId
+    ){
+        return ResponseEntity.ok(taskTypeService.updateTaskType(dto, taskTypeId, userId));
+    }
+
+    @DeleteMapping("/{taskTypeId}")
+    public ResponseEntity deleteTaskTypeById(
+            @PathVariable Long taskTypeId,
+            @RequestAttribute(RequestAttributeKey.USER_ID) Long userId
+            ){
+        taskTypeService.deleteTaskTypeById(taskTypeId, userId);
+        return ResponseEntity.noContent().build();
     }
 }
