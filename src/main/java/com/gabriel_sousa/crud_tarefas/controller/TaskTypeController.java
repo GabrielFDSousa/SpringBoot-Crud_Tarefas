@@ -7,11 +7,12 @@ import com.gabriel_sousa.crud_tarefas.security.RequestAttributeKey;
 import com.gabriel_sousa.crud_tarefas.service.TaskTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,11 +28,10 @@ public class TaskTypeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<GetTaskTypeResponseDTO>> getAllByUser(@RequestAttribute(RequestAttributeKey.USER_ID) Long userId){
-        return ResponseEntity.ok().body(
-                taskTypeService.getAllByUser(userId)
-        );
+    @GetMapping()
+    public ResponseEntity<Page<GetTaskTypeResponseDTO>> getPaginatedTasksTypesByUser(@PageableDefault(size = 20) Pageable pageable,
+                                                                     @RequestAttribute(RequestAttributeKey.USER_ID) Long userId){
+        return ResponseEntity.ok(taskTypeService.getPaginatedTasksTypesByUser(userId, pageable));
     }
 
     @PutMapping("/{taskTypeId}")

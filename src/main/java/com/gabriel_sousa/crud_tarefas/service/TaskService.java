@@ -8,11 +8,12 @@ import com.gabriel_sousa.crud_tarefas.mapper.TaskMapper;
 import com.gabriel_sousa.crud_tarefas.repository.TaskRepository;
 import com.gabriel_sousa.crud_tarefas.validation.OwnershipValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +32,9 @@ public class TaskService {
         );
     }
 
-    public List<GetTaskResponseDTO> getAllByUser(Long userId){
-        return taskMapper.entitiesToListGetResponseDto(
-                taskRepository.getAllByUserId(userId)
-        );
+    public Page<GetTaskResponseDTO> getPaginatedTasksByUser(Long userId, Pageable pageable){
+        Page<TaskEntity> entitiesPage = taskRepository.getAllByUserId(userId, pageable);
+        return entitiesPage.map(taskMapper::entityToGetResponseDto);
     }
 
     public void deleteTaskById(Long taskId, Long userId){

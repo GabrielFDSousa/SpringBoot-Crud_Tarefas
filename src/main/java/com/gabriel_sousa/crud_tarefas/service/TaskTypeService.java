@@ -8,10 +8,10 @@ import com.gabriel_sousa.crud_tarefas.mapper.TaskTypeMapper;
 import com.gabriel_sousa.crud_tarefas.repository.TaskTypeRepository;
 import com.gabriel_sousa.crud_tarefas.validation.OwnershipValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +27,10 @@ public class TaskTypeService {
         );
     }
 
-    public List<GetTaskTypeResponseDTO> getAllByUser(Long userId){
-        return taskTypeMapper.entitiesToListGetResponseDTO(taskTypeRepository.findAllByUserId(userId));
+    public Page<GetTaskTypeResponseDTO> getPaginatedTasksTypesByUser(Long userId, Pageable pageable){
+        Page<TaskTypeEntity> entitiesPage = taskTypeRepository.findAllByUserId(userId, pageable);
+
+        return entitiesPage.map(taskTypeMapper::entityToGetResponseDTO);
     }
 
     public GetTaskTypeResponseDTO updateTaskType(UpdateTaskTypeRequestDTO dto, Long taskTypeId, Long userId){
